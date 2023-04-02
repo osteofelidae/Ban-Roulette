@@ -196,8 +196,26 @@ async def process_ban_response(ctx,
     # Respond
     await ctx.respond(embed=response_embed)
 
-    # Send dm if banned
+    # Create embed and send dm if banned
     if banned:
+
+        # Set embed fields
+        embed_title = "L"  # TODO random laugh
+        embed_description = f"LOL you got banned from {ctx.guild.name}\nClick the title of this embed to rejoin when the ban expires"
+        # TODO color
+
+        # Edit embed description
+        response_embed = discord.Embed(title=embed_title,
+                                       description=embed_description,
+                                       url=str(await ctx.guild.text_channels[0].create_invite(max_age=minutes * 60 + (60 * 60))))
+
+        # Add fields
+        response_embed.add_field(name="Points",
+                                 value=f"{minutes * chance} points gained")
+        response_embed.add_field(name="Duration",
+                                 value=f"{minutes} minutes")
+
+        # Send embed
         await ctx.user.send(embed=response_embed)
 
 
@@ -223,10 +241,13 @@ async def process_ban_action(user: discord.Member,
 # Process unbans
 async def process_unbans(): # TODO exception handling
 
+    # Globals
+    global user_data
+
     # Loop forever
     while True:
 
-        # Try
+    # Try
         try:
 
             # Iterate through user in bans dictionary
@@ -260,8 +281,13 @@ async def process_unbans(): # TODO exception handling
                         # Try
                         try:
 
+                            # Get user
+                            user = await bot.fetch_user(int(user_id))
+
                             # Unban
-                            await server.unban(await bot.fetch_user(int(user_id)))
+                            await server.unban(user)
+
+                            print("x")
 
                         except:
 
@@ -270,7 +296,7 @@ async def process_unbans(): # TODO exception handling
                         # Add to remove queue
                         remove_ids.append(server_id)
 
-                        # TODO: send invite
+                        print(remove_ids)
 
                 # Iterate through ids to remove
                 for server_id in remove_ids:
