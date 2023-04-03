@@ -21,6 +21,9 @@ LANGUAGEFILE_NAME = "lang.json"
 ERROR_FILE_NAME = "dump.json"
 LOG_FILE_NAME = "log.log"
 
+# Log interval
+LOG_INTERVAL = 30
+
 
 
 # VARIABLES
@@ -366,7 +369,7 @@ async def process_unbans():
         console_print("success", f"Processed unbans")
 
         # Wait
-        await asyncio.sleep(5)
+        await asyncio.sleep(LOG_INTERVAL)
 
 # Save file wrapper for scheduling
 async def save_file():
@@ -381,7 +384,7 @@ async def save_file():
         export_savefile(SAVEFILE_NAME, user_data)
 
         # Wait
-        await asyncio.sleep(5)
+        await asyncio.sleep(LOG_INTERVAL)
 
 # Save to logging file
 async def save_log():
@@ -417,7 +420,7 @@ async def save_log():
 
             pass
 
-        await asyncio.sleep(5)
+        await asyncio.sleep(LOG_INTERVAL)
 
 
 
