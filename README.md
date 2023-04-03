@@ -2,8 +2,8 @@
 
 ## Introduction
 This is a bot that allows you to gamble minutes of ban time for points.\
-I made this bot for fun, and host it for free for anyone to use. Please feed me so I can keep hosting the bot: <https://www.buymeacoffee.com/osteofelidae)>.\
-Invite link: <https://discord.com/api/oauth2/authorize?client_id=1091204711119597588&permissions=8&scope=bot>\
+* I made this bot for fun, and host it for free for anyone to use. Please feed me so I can keep hosting the bot: <https://www.buymeacoffee.com/osteofelidae)>.\
+* Invite link: <https://discord.com/api/oauth2/authorize?client_id=1091204711119597588&permissions=8&scope=bot>\
 
 ## Privacy Policy
 * For users: When you first run a command, the bot saves your user ID number.
@@ -22,4 +22,5 @@ Invite link: <https://discord.com/api/oauth2/authorize?client_id=109120471111959
 `/leaderboard`: See the top 10 people in the current server.
 
 ## Disclaimer
-I (osteofelidae) am not responsible for any damages caused by this bot. However, any and all damages are unintentional and not malicious. You can also report bugs here, or by DMing them to osteofelidae#4343 on discord.
+* I (osteofelidae) am not responsible for any damages caused by this bot. However, any and all damages are unintentional and not malicious. You can also report bugs here, or by DMing them to osteofelidae#4343 on discord.
+* This bot will insult users, but will not cuss.
