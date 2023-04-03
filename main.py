@@ -620,21 +620,23 @@ async def profile(ctx:discord.ApplicationContext):
 
 # About command
 @bot.slash_command(description="Stalk me")
-async def about(ctx:discord.ApplicationContext):
+async def about(ctx: discord.ApplicationContext):
 
     # Create embed
     about_embed = discord.Embed(title="About Ban Roulette")
 
     # Add embed fields
     about_embed.add_field(name="Author",
-                          value="Authored by osteofelidae: https://osteofelidae.github.io/",
+                          value="Authored by osteofelidae:\nhttps://osteofelidae.github.io/",
+                          inline=False)
+    about_embed.add_field(name="Help",
+                          value="[IF YOU SEE THIS THE DEV IS LAZY AND HASNT ADDED A LINK HERE YET]",  # TODO this
                           inline=False)
     about_embed.add_field(name="Vote",
                           value="[IF YOU SEE THIS THE DEV IS LAZY AND HASNT ADDED A LINK HERE YET]", # TODO this
                           inline=False)
     about_embed.add_field(name="Donate",
-
-                          value="[IF YOU SEE THIS THE DEV IS LAZY AND HASNT ADDED A LINK HERE YET]", # TODO this
+                          value="I made this bot for fun and host it for free. If you would like to support me, please visit\nhttps://www.buymeacoffee.com/osteofelidae",
                           inline=False)
 
     # Respond
