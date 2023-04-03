@@ -5,6 +5,10 @@ This is a bot that allows you to gamble minutes of ban time for points.\
 I made this bot for fun, and host it for free for anyone to use. Please feed me so I can keep hosting the bot: <https://www.buymeacoffee.com/osteofelidae)>.\
 Invite link: <https://discord.com/api/oauth2/authorize?client_id=1091204711119597588&permissions=8&scope=bot>\
 
+## Privacy Policy
+* For users: When you first run a command, the bot saves your user ID number.
+* For server owners: When someone runs a command in your server, the bot saves your server ID number.
+
 ## Commands
 `/about`: See info about the bot, including a link to this page.
 

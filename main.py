@@ -281,7 +281,7 @@ async def process_ban_response(ctx,
 
 # Process ban action
 async def process_ban_action(user: discord.Member,
-                       banned: bool): # TODO this might ban globally?
+                       banned: bool):
 
     # Console print
     console_print("info", f"Attempting to ban {user.id}")
@@ -629,7 +629,7 @@ async def about(ctx: discord.ApplicationContext):
                           value="Made by osteofelidae:\nhttps://osteofelidae.github.io/",
                           inline=False)
     about_embed.add_field(name="Help",
-                          value="Visit this link for the source code and list of commands.\nhttps://github.com/osteofelidae/Ban-Roulette",  # TODO readme in repo
+                          value="Visit this link for the source code and list of commands.\nhttps://github.com/osteofelidae/Ban-Roulette",
                           inline=False)
     about_embed.add_field(name="Vote",
                           value="[IF YOU SEE THIS THE DEV IS LAZY AND HASNT ADDED A LINK HERE YET]", # TODO this
