@@ -1,4 +1,4 @@
-# TODO console logging, about command
+# TODO finish about command
 
 # DEPENDENCIES
 
@@ -19,6 +19,7 @@ BOT_TOKEN = open("token.config").read()
 SAVEFILE_NAME = "data.json"
 LANGUAGEFILE_NAME = "lang.json"
 ERROR_FILE_NAME = "dump.json"
+LOG_FILE_NAME = "log.log"
 
 
 
@@ -34,6 +35,9 @@ user_data_default = {"user_stats":{"example_user":{"points": 0,
 language_dict = {}
 bot_ready = False
 
+# Logging file
+log_queue = []
+
 # Discord bot object
 intents = discord.Intents.default()
 intents.members = True
@@ -46,14 +50,21 @@ bot = discord.Bot(intents=intents)
 # Console print
 def console_print(msgType: str, msgText: str):
 
+    # Globals
+    global log_queue
+
+    # Save to file
+    log_queue.append(f"[{str(datetime.datetime.now())}][{msgType.upper()}] {msgText}\n")
+
     # Print
-    print(f"[{msgType.upper()}] {msgText}")
+    print(f"[{str(datetime.datetime.now())}][{msgType.upper()}] {msgText}")
 
 # Import savefile
 def import_savefile(file_name: str,
                     error_file_name = "dump.json"):
 
-    # TODO: console print in this function
+    # Console print
+    console_print("info", f"Attempting to open {file_name}")
 
     # Temp var
     temp_dict = {}
@@ -64,8 +75,14 @@ def import_savefile(file_name: str,
         # Open file
         file_object = open(file_name, "r")
 
+        # Console print
+        console_print("success", f"Opened {file_name}")
+
     # If file not found
     except FileNotFoundError:
+
+        # Console print
+        console_print("error", f"Could not find file {file_name}, attempting to make a new file")
 
         # Create file
         file_object = open(file_name, "w")
@@ -77,14 +94,26 @@ def import_savefile(file_name: str,
         file_object.close()
         file_object = open(file_name, "r")
 
+        # Console print
+        console_print("success", f"Created file {file_name}")
+
     # Try import from file
     try:
+
+        # Console print
+        console_print("info", f"Attempting to import dict from {file_name}")
 
         # Import dict from file
         temp_dict = json.loads(file_object.read())
 
+        # Console print
+        console_print("success", f"Imported dict from {file_name}")
+
     # If formatting is incorrect
     except json.decoder.JSONDecodeError:
+
+        # Console print
+        console_print("error", f"Could not parse json in {file_name}")
 
         # TODO Dump data to error file
         error_file_object = open(error_file_name, "w")
@@ -104,6 +133,9 @@ def import_savefile(file_name: str,
 def export_savefile(file_name: str,
                     dict_in: dict):
 
+    # Console print
+    console_print("info", f"Attempting to save dict to {file_name}")
+
     # Open file for write
     file_object = open(file_name, "w")
 
@@ -113,11 +145,14 @@ def export_savefile(file_name: str,
         # Dump to file
         json.dump(dict_in, file_object)
 
+        # Console print
+        console_print("success", f"Saved dict to {file_name}")
+
     # On error
     except:
 
         # Return error
-        console_print("error", "Critical error writing to savefile.")
+        console_print("error", "Error writing to savefile.")
 
     # Close file
     file_object.close()
@@ -132,6 +167,9 @@ async def process_ban_data(server_id: int,
     # Globals
     global user_data
 
+    # Console print
+    console_print("info", f"Processing ban data for user {user_id} in server {server_id}")
+
     # See if dict entry exists
     try:
 
@@ -141,10 +179,16 @@ async def process_ban_data(server_id: int,
 
     except:
 
+        # Console print
+        console_print("info", f"User entry not found, intializing profile for {user_id}")
+
         # Initialize profile
         user_data["user_stats"][str(user_id)] = {"points": 0,
                                             "banned_minutes": 0}
         user_data["bans"][str(user_id)] = {}
+
+        # Console print
+        console_print("success", f"Initialized profile for {user_id}")
 
     # Increment user points
     user_data["user_stats"][str(user_id)]["points"] += minutes * chance
@@ -163,6 +207,9 @@ async def process_ban_data(server_id: int,
 
         # Add to time
         user_data["bans"][str(user_id)][str(server_id)] = str(ban_end_time)
+
+    # Console print
+    console_print("success", f"Added ban data for {user_id} in {server_id}")
 
 # Process ban response
 async def process_ban_response(ctx,
@@ -231,7 +278,10 @@ def get_random(dict_in: dict,
 
 # Process ban action
 async def process_ban_action(user: discord.Member,
-                       banned: bool):
+                       banned: bool): # TODO this might ban globally?
+
+    # Console print
+    console_print("info", f"Attempting to ban {user.id}")
 
     # If user is banned
     if banned:
@@ -240,7 +290,10 @@ async def process_ban_action(user: discord.Member,
         try:
 
             # Ban user
-            await user.ban()
+            await user.ban(reason="Ban roulette")
+
+            # Console print
+            console_print("success", f"Banned {user.id}")
 
         # if failed
         except discord.errors.Forbidden:
@@ -248,15 +301,20 @@ async def process_ban_action(user: discord.Member,
             console_print("error", f"Could not ban {user.name}. Insufficient permissions.")
 
 # Process unbans
-async def process_unbans(): # TODO exception handling
+async def process_unbans():
 
     # Globals
     global user_data
 
+
+
     # Loop forever
     while True:
 
-    # Try
+        # Console print
+        console_print("info", f"Processing unbans")
+
+        # Try
         try:
 
             # Iterate through user in bans dictionary
@@ -290,7 +348,8 @@ async def process_unbans(): # TODO exception handling
 
                         except:
 
-                            pass
+                            # Console print
+                            console_print("error", f"Error unbanning user {user_id} in {server_id}")
 
                         # Add to remove queue
                         remove_ids.append(server_id)
@@ -306,6 +365,9 @@ async def process_unbans(): # TODO exception handling
         except:
 
             pass
+
+        # Console print
+        console_print("success", f"Processed unbans")
 
         # Wait
         await asyncio.sleep(5)
@@ -323,6 +385,42 @@ async def save_file():
         export_savefile(SAVEFILE_NAME, user_data)
 
         # Wait
+        await asyncio.sleep(5)
+
+# Save to logging file
+async def save_log():
+
+    # Wait
+    await asyncio.sleep(3)
+
+    # Repeat forever
+    while True:
+
+        # Try
+        try:
+
+            # If there are items in list:
+            queue_length = len(log_queue)
+            if queue_length != 0:
+
+                # Repeat for everything in queue
+                for index in range(queue_length):
+
+                    # Open file
+                    log_file = open(LOG_FILE_NAME, "a")
+
+                    # Write to file
+                    log_file.write(log_queue.pop())
+
+                    # Close file
+                    log_file.close()
+
+            # Wait
+
+        except:
+
+            pass
+
         await asyncio.sleep(5)
 
 
@@ -353,6 +451,9 @@ async def on_ready():
 async def wager(ctx: discord.ApplicationContext,
                 minutes: int = 15,
                 chance: int = 1):
+
+    # Console print
+    console_print("info", f"")
 
     # If either var is out of range
     if minutes <= 0 or chance <= 0 or chance >= 6:
@@ -545,6 +646,7 @@ async def about(ctx:discord.ApplicationContext):
 
 bot.loop.create_task(process_unbans())
 bot.loop.create_task(save_file())
+bot.loop.create_task(save_log())
 
 
 
