@@ -1,4 +1,4 @@
-# TODO console logging
+# TODO console logging, about command
 
 # DEPENDENCIES
 
@@ -17,6 +17,7 @@ BOT_TOKEN = open("token.config").read()
 
 # Savefile name
 SAVEFILE_NAME = "data.json"
+LANGUAGEFILE_NAME = "lang.json"
 ERROR_FILE_NAME = "dump.json"
 
 
@@ -30,6 +31,7 @@ user_data_default = {"user_stats":{"example_user":{"points": 0,
                                                    "banned_minutes": 0}},
                      "bans": {"example_user":{"(server_id)":{"(UNIX date)"}}}
                      }
+language_dict = {}
 bot_ready = False
 
 # Discord bot object
@@ -173,16 +175,16 @@ async def process_ban_response(ctx,
     if banned:
 
         # Set embed fields
-        embed_title = "L" # TODO random laugh
-        embed_description = f"LOL {user_name} got banned"
+        embed_title = get_random(language_dict, "laugh")
+        embed_description = f"{get_random(language_dict, 'laugh')} {user_name} got banned"
         # TODO color
 
     # If not banned:
     else:
 
         # Set embed fields
-        embed_title = "WOW"  # TODO random exclamation
-        embed_description = f"LOL {user_name} dodged the ban!"
+        embed_title = get_random(language_dict, "exclaim")
+        embed_description = f"{get_random(language_dict, 'laugh')} {user_name} dodged the ban!"
         # TODO color
 
     # Create embed
@@ -202,8 +204,8 @@ async def process_ban_response(ctx,
     if banned:
 
         # Set embed fields
-        embed_title = "L"  # TODO random laugh
-        embed_description = f"LOL you got banned from {ctx.guild.name}\nClick the title of this embed to rejoin when the ban expires"
+        embed_title = get_random(language_dict, 'laugh')
+        embed_description = f"{get_random(language_dict, 'laugh')} you got banned from {ctx.guild.name}\nClick the title of this embed to rejoin when the ban expires"
         # TODO color
 
         # Edit embed description
@@ -220,7 +222,12 @@ async def process_ban_response(ctx,
         # Send embed
         await ctx.user.send(embed=response_embed)
 
+# Function to get random thing from lang
+def get_random(dict_in: dict,
+               field: str):
 
+    # Return random choice from field
+    return random.choice(dict_in[field])
 
 # Process ban action
 async def process_ban_action(user: discord.Member,
@@ -325,10 +332,11 @@ async def save_file():
 async def on_ready():
 
     # Globals
-    global user_data, bot_ready
+    global user_data, bot_ready, language_dict
 
     # Import user data
     user_data = import_savefile(SAVEFILE_NAME, error_file_name=ERROR_FILE_NAME)
+    language_dict = import_savefile(LANGUAGEFILE_NAME)
 
     # Set bot is ready
     bot_ready = True
@@ -350,21 +358,21 @@ async def wager(ctx: discord.ApplicationContext,
     if minutes <= 0 or chance <= 0 or chance >= 6:
 
         # Check if minutes and chance are in range
-        error_embed = discord.Embed(title="U fucked up") # TODO random fuckup text, color
+        error_embed = discord.Embed(title=f"{get_random(language_dict, 'laugh')} u fucked up") #TODO color
 
         # If minutes out of range
         if minutes <= 0:
 
             # Add field
             error_embed.add_field(name="Minutes",
-                                  value="You need to wager at least 1 minute, idiot") # TODO random insult
+                                  value=f"You need to wager at least 1 minute, {get_random(language_dict, 'insult')}")
 
         # If chance out of range
         if chance <= 0 or chance >= 6:
 
             # Add field
             error_embed.add_field(name="Chance",
-                                  value="Chance needs to be between 1 and 5, idiot")  # TODO random insult
+                                  value=f"Chance needs to be between 1 and 5, {get_random(language_dict, 'insult')}")
 
         # Respond with embed
         await ctx.respond(embed=error_embed)
@@ -502,12 +510,34 @@ async def profile(ctx:discord.ApplicationContext):
 
         # Create embed
         profile_embed = discord.Embed(title="Profile",
-                                      description="You don't seem to have played before, idiot!") # TODO random insult
+                                      description=f"You don't seem to have played before, {get_random(language_dict, 'insult')}!")
 
 
 
     # Respond
     await ctx.respond(embed=profile_embed)
+
+# About command
+@bot.slash_command(description="Stalk me")
+async def about(ctx:discord.ApplicationContext):
+
+    # Create embed
+    about_embed = discord.Embed(title="About Ban Roulette")
+
+    # Add embed fields
+    about_embed.add_field(name="Author",
+                          value="Authored by osteofelidae: https://osteofelidae.github.io/",
+                          inline=False)
+    about_embed.add_field(name="Vote",
+                          value="[IF YOU SEE THIS THE DEV IS LAZY AND HASNT ADDED A LINK HERE YET]", # TODO this
+                          inline=False)
+    about_embed.add_field(name="Donate",
+
+                          value="[IF YOU SEE THIS THE DEV IS LAZY AND HASNT ADDED A LINK HERE YET]", # TODO this
+                          inline=False)
+
+    # Respond
+    await ctx.respond(embed=about_embed)
 
 
 
