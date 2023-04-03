@@ -129,6 +129,13 @@ def import_savefile(file_name: str,
     # Return resulting dict
     return temp_dict
 
+# Function to get random thing from lang
+def get_random(dict_in: dict,
+               field: str):
+
+    # Return random choice from field
+    return random.choice(dict_in[field])
+
 # Export savefile
 def export_savefile(file_name: str,
                     dict_in: dict):
@@ -258,7 +265,7 @@ async def process_ban_response(ctx,
         # Edit embed description
         response_embed = discord.Embed(title=embed_title,
                                        description=embed_description,
-                                       url=str(await ctx.guild.text_channels[0].create_invite(max_age=minutes * 60 + (60 * 60))))
+                                       url=str(await ctx.guild.text_channels[0].create_invite(max_uses=1)))
 
         # Add fields
         response_embed.add_field(name="Points",
@@ -268,13 +275,6 @@ async def process_ban_response(ctx,
 
         # Send embed
         await ctx.user.send(embed=response_embed)
-
-# Function to get random thing from lang
-def get_random(dict_in: dict,
-               field: str):
-
-    # Return random choice from field
-    return random.choice(dict_in[field])
 
 # Process ban action
 async def process_ban_action(user: discord.Member,
@@ -344,8 +344,6 @@ async def process_unbans():
                             # Unban
                             await server.unban(user)
 
-                            print("x")
-
                         except:
 
                             # Console print
@@ -353,8 +351,6 @@ async def process_unbans():
 
                         # Add to remove queue
                         remove_ids.append(server_id)
-
-                        print(remove_ids)
 
                 # Iterate through ids to remove
                 for server_id in remove_ids:
@@ -627,16 +623,16 @@ async def about(ctx: discord.ApplicationContext):
 
     # Add embed fields
     about_embed.add_field(name="Author",
-                          value="Authored by osteofelidae:\nhttps://osteofelidae.github.io/",
+                          value="Made by osteofelidae:\nhttps://osteofelidae.github.io/",
                           inline=False)
     about_embed.add_field(name="Help",
-                          value="[IF YOU SEE THIS THE DEV IS LAZY AND HASNT ADDED A LINK HERE YET]",  # TODO this
+                          value="Visit this link for the source code and list of commands.\nhttps://github.com/osteofelidae/Ban-Roulette",  # TODO readme in repo
                           inline=False)
     about_embed.add_field(name="Vote",
                           value="[IF YOU SEE THIS THE DEV IS LAZY AND HASNT ADDED A LINK HERE YET]", # TODO this
                           inline=False)
     about_embed.add_field(name="Donate",
-                          value="I made this bot for fun and host it for free. If you would like to support me, please visit\nhttps://www.buymeacoffee.com/osteofelidae",
+                          value="I made this bot for fun and host it for free. Please feed me so I can continue doing this.\nhttps://www.buymeacoffee.com/osteofelidae",
                           inline=False)
 
     # Respond
