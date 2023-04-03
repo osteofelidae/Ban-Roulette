@@ -24,3 +24,4 @@ This is a bot that allows you to gamble minutes of ban time for points.
 ## Disclaimer
 * I (osteofelidae) am not responsible for any damages caused by this bot. However, any and all damages are unintentional and not malicious. You can also report bugs here, or by DMing them to osteofelidae#4343 on discord.
 * This bot will insult users, but will not cuss.
+* This bot does not break the section of the Discord Terms of Service about gambling, as there is no real-world gain. Points are not redeemable, nor can you use them to purchase tangible things or services.
