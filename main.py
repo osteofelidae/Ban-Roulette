@@ -1,4 +1,4 @@
-# TODO console logging, leaderboard command, profile command
+# TODO console logging
 
 # DEPENDENCIES
 
@@ -30,9 +30,11 @@ user_data_default = {"user_stats":{"example_user":{"points": 0,
                                                    "banned_minutes": 0}},
                      "bans": {"example_user":{"(server_id)":{"(UNIX date)"}}}
                      }
+bot_ready = False
 
 # Discord bot object
 intents = discord.Intents.default()
+intents.members = True
 bot = discord.Bot(intents=intents)
 
 
@@ -145,6 +147,9 @@ async def process_ban_data(server_id: int,
     # Increment user points
     user_data["user_stats"][str(user_id)]["points"] += minutes * chance
 
+    # Make sure it is int
+    user_data["user_stats"][str(user_id)]["banned_minutes"] = int(user_data["user_stats"][str(user_id)]["banned_minutes"])
+
     # If user is banned:
     if banned:
 
@@ -156,9 +161,6 @@ async def process_ban_data(server_id: int,
 
         # Add to time
         user_data["bans"][str(user_id)][str(server_id)] = str(ban_end_time)
-
-    # Save
-    export_savefile(SAVEFILE_NAME, user_data)
 
 # Process ban response
 async def process_ban_response(ctx,
@@ -253,9 +255,6 @@ async def process_unbans(): # TODO exception handling
             # Iterate through user in bans dictionary
             for user_id in user_data["bans"]:
 
-                # TODO temp
-                print(user_id)
-
                 # Server ids to remove
                 remove_ids = []
 
@@ -265,15 +264,8 @@ async def process_unbans(): # TODO exception handling
                     # Formulate date
                     ban_date = (datetime.datetime.strptime(user_data["bans"][str(user_id)][str(server_id)], "%Y-%m-%d %H:%M:%S.%f"))
 
-                    # TODO temp
-                    print(str(ban_date) + "    " + str(datetime.datetime.now()))
-                    print(ban_date < datetime.datetime.now())
-
                     # If date is passed
                     if ban_date < datetime.datetime.now():
-
-                        # TODo temp
-                        print("YES")
 
                         # Get server
                         server = bot.get_guild(int(server_id))
@@ -304,17 +296,27 @@ async def process_unbans(): # TODO exception handling
                     # Remove dict entry
                     user_data["bans"][str(user_id)].pop(str(server_id))
 
-                    # Save file
-                    export_savefile(SAVEFILE_NAME, user_data)
-
-
         except:
 
             pass
 
         # Wait
-        await asyncio.sleep(1)
+        await asyncio.sleep(5)
 
+# Save file wrapper for scheduling
+async def save_file():
+
+    # Wait
+    await asyncio.sleep(11)
+
+    # Loop
+    while True and bot_ready:
+
+        # Save
+        export_savefile(SAVEFILE_NAME, user_data)
+
+        # Wait
+        await asyncio.sleep(5)
 
 
 
@@ -323,10 +325,13 @@ async def process_unbans(): # TODO exception handling
 async def on_ready():
 
     # Globals
-    global user_data
+    global user_data, bot_ready
 
     # Import user data
     user_data = import_savefile(SAVEFILE_NAME, error_file_name=ERROR_FILE_NAME)
+
+    # Set bot is ready
+    bot_ready = True
 
     # Print
     console_print("info", "Bot is ready")
@@ -394,11 +399,122 @@ async def wager(ctx: discord.ApplicationContext,
     # Process ban action
     await process_ban_action(ctx.author, banned)
 
+# Leaderboard command
+@bot.slash_command(description="Who is good and who is not?")
+async def leaderboard(ctx: discord.ApplicationContext): # TODO page number
+
+    # Get server
+    server = ctx.guild
+
+    # Temp dict
+    leaderboard_dict = {}
+
+    # Iterate through users in server
+    for user in server.members:
+
+        # If user is registered
+        if str(user.id) in user_data["user_stats"]:
+
+            # Add to temp dict
+            leaderboard_dict[str(user.id)] = int(user_data["user_stats"][str(user.id)]["points"])
+
+    # Sort dict
+    leaderboard_dict = dict(sorted(leaderboard_dict.items(), key=lambda item: 1/item[1]))
+
+    # Create embed
+    leaderboard_embed = discord.Embed(title="Leaderboard")
+
+    # Generate text
+    rankings = ""
+    usernames = ""
+    points = ""
+    for index in range(min(10, len(leaderboard_dict))):
+
+        rankings += f"{str(index+1)}\n"
+        usernames += f"{server.get_member(int(list(leaderboard_dict.keys())[index])).name}\n"
+        points += f"{int(list(leaderboard_dict.values())[index])}\n"
+
+    # Add embed fields
+    leaderboard_embed.add_field(name="Rank",
+                                value=rankings,
+                                inline=True)
+    leaderboard_embed.add_field(name="User",
+                                value=usernames,
+                                inline=True)
+    leaderboard_embed.add_field(name="Points",
+                                value=points,
+                                inline=True)
+
+    # Respond
+    await ctx.respond(embed=leaderboard_embed)
+
+# Profile command
+@bot.slash_command(description="How bad are you?")
+async def profile(ctx:discord.ApplicationContext):
+
+    # Get server
+    server = ctx.guild
+
+    # Temp dict
+    leaderboard_dict = {}
+
+    # Iterate through users in server
+    for user in server.members:
+
+        # If user is registered
+        if str(user.id) in user_data["user_stats"]:
+            # Add to temp dict
+            leaderboard_dict[str(user.id)] = int(user_data["user_stats"][str(user.id)]["points"])
+
+    # Try
+    try:
+
+        # Sort dict
+        leaderboard_dict = dict(sorted(leaderboard_dict.items(), key=lambda item: 1 / item[1]))
+
+        # Get ranking
+        ranking = str((list(leaderboard_dict.keys()).index(str(ctx.author.id)))+1)
+
+        # Get minutes banned
+        minutes_banned = user_data["user_stats"][str(ctx.author.id)]["banned_minutes"]
+
+        # Get points
+        points = int(user_data["user_stats"][str(ctx.author.id)]["points"])
+
+        # Create embed
+        profile_embed = discord.Embed(title="Profile")
+
+        # Add embed fields
+        profile_embed.add_field(name="Name",
+                                value=ctx.author.name,
+                                inline=False)
+        profile_embed.add_field(name="Server ranking",
+                                value=ranking,
+                                inline=False)
+        profile_embed.add_field(name="Points",
+                                value=points,
+                                inline=False)
+        profile_embed.add_field(name="Minutes banned",
+                                value=minutes_banned,
+                                inline=False)
+
+    except:
+
+        # Create embed
+        profile_embed = discord.Embed(title="Profile",
+                                      description="You don't seem to have played before, idiot!") # TODO random insult
+
+
+
+    # Respond
+    await ctx.respond(embed=profile_embed)
+
 
 
 # REGISTER EVENTS
 
 bot.loop.create_task(process_unbans())
+bot.loop.create_task(save_file())
 
 
 
