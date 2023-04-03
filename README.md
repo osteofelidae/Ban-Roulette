@@ -2,8 +2,11 @@
 
 ## Introduction
 This is a bot that allows you to gamble minutes of ban time for points.
+I made this bot for fun, and host it for free for anyone to use. Please feed me so I can keep hosting the bot: [https://www.buymeacoffee.com/osteofelidae](https://www.buymeacoffee.com/osteofelidae).
 
 ## Commands
+`/about`: See info about the bot, including a link to this page.
+
 `/wager [minutes] [chance]`: Risk getting banned, but get points.
 * `[minutes]` is the amount of time (in minutes, obviously) that you are willing to get banned for.
 * `[chance]` is a number from 1 to 5, inclusive. The higher the number, the more likely you are to get banned.
