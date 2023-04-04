@@ -458,7 +458,7 @@ async def wager(ctx: discord.ApplicationContext,
     if minutes <= 0 or chance <= 0 or chance >= 6:
 
         # Check if minutes and chance are in range
-        error_embed = discord.Embed(title=f"{get_random(language_dict, 'laugh')} u fucked up") #TODO color
+        error_embed = discord.Embed(title=f"{get_random(language_dict, 'laugh')} u screwed up") #TODO color
 
         # If minutes out of range
         if minutes <= 0:
@@ -632,7 +632,7 @@ async def about(ctx: discord.ApplicationContext):
                           value="Visit this link for the source code and list of commands.\nhttps://github.com/osteofelidae/Ban-Roulette",
                           inline=False)
     about_embed.add_field(name="Vote",
-                          value="[IF YOU SEE THIS THE DEV IS LAZY AND HASNT ADDED A LINK HERE YET]", # TODO this
+                          value="[No top.gg link yet.]", # TODO this
                           inline=False)
     about_embed.add_field(name="Donate",
                           value="I made this bot for fun and host it for free. Please feed me so I can continue doing this.\nhttps://www.buymeacoffee.com/osteofelidae",
