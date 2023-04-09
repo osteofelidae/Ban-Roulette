@@ -632,7 +632,7 @@ async def about(ctx: discord.ApplicationContext):
                           value="Visit this link for the source code and list of commands.\nhttps://github.com/osteofelidae/Ban-Roulette",
                           inline=False)
     about_embed.add_field(name="Vote",
-                          value="[No top.gg link yet.]", # TODO this
+                          value="https://top.gg/bot/1091204711119597588",
                           inline=False)
     about_embed.add_field(name="Donate",
                           value="I made this bot for fun and host it for free. Please feed me so I can continue doing this.\nhttps://www.buymeacoffee.com/osteofelidae",
